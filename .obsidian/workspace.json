@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "f3373bb181819997",
+        "id": "8a0e28b56853d497",
         "type": "tabs",
         "children": [
           {
-            "id": "22671d9f1cb56c5f",
+            "id": "976acd8fb0daed47",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "WORLD BUILDING ALPHA 0.1 INTRO DOC.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "WORLD BUILDING ALPHA 0.1 INTRO DOC"
+              "title": "New tab"
             }
           }
         ]
@@ -164,13 +160,23 @@
               "icon": "lucide-list",
               "title": "Outline of WORLD BUILDING ALPHA 0.1"
             }
+          },
+          {
+            "id": "b4b000c69aa0b41a",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -180,14 +186,22 @@
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "bases:Create new base": false,
+      "obsidian-git:Open Git source control": false
     }
   },
-  "active": "22671d9f1cb56c5f",
+  "active": "976acd8fb0daed47",
   "lastOpenFiles": [
+    "2025-11-27.md",
+    "Untitled.canvas",
+    "Races/humans.md",
+    "Untitled.base",
+    "Untitled 1.canvas",
+    "WORLD BUILDING ALPHA 0.1 INTRO DOC.md",
+    "Civilizations/civilizations.md",
+    "Civilizations/humans.md",
     "index.html",
     "build-wiki.js",
-    "WORLD BUILDING ALPHA 0.1 INTRO DOC.md",
     "README-WIKI.md",
     "server.js",
     "vault-data.json",
@@ -197,9 +211,6 @@
     "wiki.css",
     "wiki.html",
     "Locations/Planets.md",
-    "Magic",
-    "Civilizations/civilizations.md",
-    "Classes",
     "Welcome.md",
     "create a link.md"
   ]

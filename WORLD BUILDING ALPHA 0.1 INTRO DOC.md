@@ -4,5 +4,5 @@ the theme is a mix of Fantasy & sci-fi, where magic serves as the technology, an
 
 The goal is not to have one main story, but making a modular story telling system incompassing all [[civilizations]] and/or [[Planets]], with the same overarching theme.
 
-Different planets on different solar systems means totally different creatures, with unique [[Cultures]] tied to their environment, 
+Different planets on different solar systems means totally different creatures, with unique [[Cultures]] tied to their environment, for example the [[Races/humans|Human]] race is a wide sprawling race that 
 
