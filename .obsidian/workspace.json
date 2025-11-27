@@ -11,10 +11,14 @@
             "id": "976acd8fb0daed47",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
-              "icon": "lucide-file",
-              "title": "New tab"
+              "type": "split-diff-view",
+              "state": {
+                "aFile": "index.html",
+                "bFile": "index.html",
+                "aRef": ""
+              },
+              "icon": "diff",
+              "title": "Diff: index.html"
             }
           }
         ]
