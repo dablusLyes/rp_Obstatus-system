@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obsatus System Wiki</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@200;300;500&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-sidebar: #f5f5f5;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --text-sidebar: #1a1a1a;
+            --border-color: #e0e0e0;
+            --link-color: #2563eb;
+            --link-hover: #1d4ed8;
+            --code-bg: #f4f4f4;
+            --code-text: #d63384;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-sidebar: #1a1a1a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-sidebar: #e0e0e0;
+            --border-color: #404040;
+            --link-color: #60a5fa;
+            --link-hover: #93c5fd;
+            --code-bg: #2d2d2d;
+            --code-text: #f472b6;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-toggle:hover {
+            background-color: var(--bg-primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--bg-primary);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 60px;
+            width: 300px;
+            height: calc(100vh - 60px);
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .sidebar h2 {
+            font-family: 'Source Serif 4', serif;
+            font-weight: 500;
+            font-size: 20px;
+            color: #000000;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .file-tree {
+            list-style: none;
+        }
+
+        .file-tree li {
+            padding: 6px 0;
+            cursor: pointer;
+            color: var(--text-sidebar);
+            font-family: 'Source Serif 4', serif;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .file-tree li:hover {
+            color: var(--link-color);
+        }
+
+        .file-tree li.folder {
+            font-weight: 500;
+            color: var(--link-color);
+            user-select: none;
+        }
+
+        .file-tree li.folder::before {
+            content: '📁 ';
+            margin-right: 5px;
+        }
+
+        .file-tree li.file::before {
+            content: '📄 ';
+            margin-right: 5px;
+        }
+
+        .file-tree li.active {
+            color: var(--link-color);
+            font-weight: 500;
+        }
+
+        .file-tree li.collapsed > ul {
+            display: none;
+        }
+
+        .file-tree ul {
+            margin-left: 20px;
+            margin-top: 5px;
+            list-style: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 300px;
+            margin-top: 60px;
+            padding: 40px;
+            max-width: 900px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.sidebar-hidden {
+            margin-left: 0;
+        }
+
+        .note-content {
+            display: none;
+        }
+
+        .note-content.active {
+            display: block;
+        }
+
+        .note-content h1 {
+            font-family: 'Source Serif 4', serif;
+            font-weight: 500;
+            font-size: 36px;
+            color: #000000;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .note-content h2 {
+            font-family: 'Source Serif 4', serif;
+            font-weight: 500;
+            font-size: 28px;
+            color: #000000;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .note-content h3 {
+            font-family: 'Source Serif 4', serif;
+            font-weight: 500;
+            font-size: 24px;
+            color: #000000;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        .note-content h4, .note-content h5, .note-content h6 {
+            font-family: 'Source Serif 4', serif;
+            font-weight: 500;
+            color: #000000;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .note-content p {
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .note-content a {
+            color: var(--link-color);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .note-content a:hover {
+            border-bottom-color: var(--link-color);
+        }
+
+        .note-content a.wikilink {
+            color: var(--link-color);
+            font-weight: 500;
+        }
+
+        .note-content strong {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .note-content em {
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .note-content code {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .note-content pre {
+            background-color: var(--code-bg);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .note-content pre code {
+            background: none;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        .note-content ul, .note-content ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        .note-content li {
+            margin-bottom: 8px;
+        }
+
+        .note-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .note-content hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 30px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state h2 {
+            font-family: 'Source Serif 4', serif;
+            font-weight: 500;
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .main-content.sidebar-hidden {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <header>
+        <div class="header-left">
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
+            <h1 style="font-family: 'Source Serif 4', serif; font-weight: 500; font-size: 24px; color: #000000;">Obsatus System</h1>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <h2>Vault</h2>
+        <ul class="file-tree" id="fileTree"></ul>
+    </aside>
+
+    <main class="main-content" id="mainContent">
+        <div class="empty-state" id="emptyState">
+            <h2>Welcome</h2>
+            <p>Select a note from the sidebar to begin.</p>
+        </div>
+        <div id="notesContainer"></div>
+    </main>
+
+    <script>
+        const notes = {"civilizations":{"id":"civilizations","name":"civilizations","path":"Civilizations/civilizations.md","content":"","rawContent":""},"Planets":{"id":"Planets","name":"Planets","path":"Locations/Planets.md","content":"","rawContent":""},"WORLD BUILDING ALPHA 0.1 INTRO DOC":{"id":"WORLD BUILDING ALPHA 0.1 INTRO DOC","name":"WORLD BUILDING ALPHA 0.1 INTRO DOC","path":"WORLD BUILDING ALPHA 0.1 INTRO DOC.md","content":"\u003cp>An inter-stellar wide story, with \u003ca href=\"#\" class=\"wikilink\" data-link=\"civilizations\">civilizations\u003c/a> at different stages of advancement.\nthe theme is a mix of Fantasy & sci-fi, where magic serves as the technology, and the study of it is what we would percieve as todays Research\u003c/p>\n\u003cp>The goal is not to have one main story, but making a modular story telling system incompassing all \u003ca href=\"#\" class=\"wikilink\" data-link=\"civilizations\">civilizations\u003c/a> and/or \u003ca href=\"#\" class=\"wikilink\" data-link=\"Planets\">Planets\u003c/a>, with the same overarching theme.\u003c/p>\n\u003cp>Different planets on different solar systems means totally different creatures, with unique \u003ca href=\"#\" class=\"wikilink\" data-link=\"Cultures\">Cultures\u003c/a> tied to their environment,\u003c/p>","rawContent":"\nAn inter-stellar wide story, with [[civilizations]] at different stages of advancement. \nthe theme is a mix of Fantasy & sci-fi, where magic serves as the technology, and the study of it is what we would percieve as todays Research \n\nThe goal is not to have one main story, but making a modular story telling system incompassing all [[civilizations]] and/or [[Planets]], with the same overarching theme.\n\nDifferent planets on different solar systems means totally different creatures, with unique [[Cultures]] tied to their environment, \n\n"}};
+        const structure = [{"type":"folder","name":"Civilizations","path":"Civilizations","children":[{"type":"file","name":"civilizations","path":"Civilizations/civilizations.md","noteId":"civilizations"}]},{"type":"folder","name":"Locations","path":"Locations","children":[{"type":"file","name":"Planets","path":"Locations/Planets.md","noteId":"Planets"}]},{"type":"file","name":"WORLD BUILDING ALPHA 0.1 INTRO DOC","path":"WORLD BUILDING ALPHA 0.1 INTRO DOC.md","noteId":"WORLD BUILDING ALPHA 0.1 INTRO DOC"}];
+        const fileTree = document.getElementById('fileTree');
+        const notesContainer = document.getElementById('notesContainer');
+        const emptyState = document.getElementById('emptyState');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const themeToggle = document.getElementById('themeToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        // Theme toggle
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Sidebar toggle
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('hidden');
+            mainContent.classList.toggle('sidebar-hidden');
+        });
+
+        // Build file tree
+        function buildFileTree(items, parentList) {
+            items.forEach(item => {
+                const li = document.createElement('li');
+
+                if (item.type === 'folder') {
+                    li.className = 'folder';
+                    li.textContent = item.name;
+                    li.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        li.classList.toggle('collapsed');
+                    });
+
+                    const ul = document.createElement('ul');
+                    if (item.children && item.children.length > 0) {
+                        buildFileTree(item.children, ul);
+                    }
+                    li.appendChild(ul);
+                    parentList.appendChild(li);
+                } else if (item.type === 'file') {
+                    li.className = 'file';
+                    li.textContent = item.name;
+                    li.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        loadNote(item.noteId);
+                        // Update active state
+                        document.querySelectorAll('.file-tree li').forEach(l => l.classList.remove('active'));
+                        li.classList.add('active');
+                    });
+                    parentList.appendChild(li);
+                }
+            });
+        }
+
+        // Load note
+        function loadNote(noteId) {
+            const note = notes[noteId];
+            if (!note) {
+                console.error('Note not found:', noteId);
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            // Check if note content already exists
+            let noteDiv = document.getElementById('note-' + noteId);
+            if (!noteDiv) {
+                noteDiv = document.createElement('div');
+                noteDiv.id = 'note-' + noteId;
+                noteDiv.className = 'note-content';
+                noteDiv.innerHTML = note.content;
+                notesContainer.appendChild(noteDiv);
+
+                // Attach wiki link listeners
+                attachWikiLinkListeners(noteDiv);
+            }
+
+            // Hide all notes and show selected
+            document.querySelectorAll('.note-content').forEach(n => n.classList.remove('active'));
+            noteDiv.classList.add('active');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Wiki link navigation
+        function attachWikiLinkListeners(container) {
+            container.querySelectorAll('.wikilink').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const linkName = link.dataset.link;
+                    const searchName = linkName.toLowerCase();
+
+                    // Try exact match
+                    let foundNoteId = null;
+                    for (const noteId in notes) {
+                        if (noteId.toLowerCase() === searchName) {
+                            foundNoteId = noteId;
+                            break;
+                        }
+                    }
+
+                    // Try partial match
+                    if (!foundNoteId) {
+                        for (const noteId in notes) {
+                            if (noteId.toLowerCase().includes(searchName) || searchName.includes(noteId.toLowerCase())) {
+                                foundNoteId = noteId;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (foundNoteId) {
+                        loadNote(foundNoteId);
+                        // Update active state in sidebar
+                        document.querySelectorAll('.file-tree li').forEach(l => {
+                            if (l.textContent.includes(notes[foundNoteId].name)) {
+                                document.querySelectorAll('.file-tree li').forEach(li => li.classList.remove('active'));
+                                l.classList.add('active');
+                            }
+                        });
+                    } else {
+                        console.log('Note not found:', linkName);
+                        link.style.opacity = '0.5';
+                    }
+                });
+            });
+        }
+
+        // Initialize
+        buildFileTree(structure, fileTree);
+    </script>
+</body>
+</html>
